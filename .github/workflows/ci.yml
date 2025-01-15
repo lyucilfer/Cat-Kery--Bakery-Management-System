@@ -33,35 +33,33 @@ jobs:
       run: |
         sudo service mysql start
         mysql -u root -p$MYSQL_ROOT_PASSWORD -e "SET GLOBAL sql_mode = 'NO_ENGINE_SUBSTITUTION';"
-        mysql -u root -p$MYSQL_ROOT_PASSWORD -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH 'mysql_native_password' BY '$MYSQL_ROOT_PASSWORD'; FLUSH PRIVILEGES;"
-        mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE cat_kery;"
+        mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE IF NOT EXISTS cat_kery;"
         mysql -u root -p$MYSQL_ROOT_PASSWORD cat_kery < ./cat-kery.sql
 
     # Step 4: Install Composer Dependencies
     - name: Install Composer Dependencies
-      run: |
-        composer clear-cache
-        rm -rf vendor
-        composer install --prefer-dist
+      rm -rf vendor
+      run: composer install --prefer-dist
 
-    # Step 5: Start PHP Built-in Web Server
+    # Step 5: Start PHP Web Server
     - name: Start PHP Web Server
       run: |
-        php -S localhost:$SERVER_PORT -t ./cat-kery > /dev/null 2>&1 &
-      # Serve the "cat-kery" directory on localhost:8000
+        php -S localhost:$SERVER_PORT -t ./cat-kery > server.log 2>&1 &
+    
+    # Debugging Steps
+    - name: Debug Running Processes
+      run: ps aux | grep php
+
+    - name: Debug PHP Server Logs
+      run: cat server.log
+
+    - name: Check Port Availability
+      run: sudo netstat -tuln | grep :$SERVER_PORT || echo "Port is available"
 
     # Step 6: Verify Server Accessibility
     - name: Test Application Accessibility
-      run: curl --fail http://localhost:$SERVER_PORT/
+      run: curl -v http://localhost:$SERVER_PORT/
 
     # Step 7: Run PHPUnit Tests
     - name: Run PHPUnit Tests
       run: vendor/bin/phpunit --testdox
-
-    # Step 8: Archive Test Results (Optional)
-    - name: Upload Test Results
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-results
-        path: ./tests/
