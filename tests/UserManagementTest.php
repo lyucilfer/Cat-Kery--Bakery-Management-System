@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 class UserManagementTest extends TestCase
 {
-    private $baseUrl = 'http://localhost/cat-kery';
+    private $baseUrl = 'http://localhost:8000/';
 
     public function testUserLogin()
     {

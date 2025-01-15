@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 class ProductManagementTest extends TestCase
 {
-    private $baseUrl = 'http://localhost/cat-kery/admin';
+    private $baseUrl = 'http://localhost:8000/';
 
     protected function setUp(): void
     {

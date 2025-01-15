@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 class CustomerSupportTest extends TestCase
 {
-    private $baseUrl = 'http://localhost/cat-kery';
+    private $baseUrl = 'http://localhost:8000/';
 
     // Test customer message submission via contact.php
     public function testSubmitCustomerMessage()

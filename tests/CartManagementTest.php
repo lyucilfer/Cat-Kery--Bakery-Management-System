@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 class CartManagementTest extends TestCase
 {
-    private $baseUrl = 'http://localhost/cat-kery';
+    private $baseUrl = 'http://localhost:8000/';
 
     /**
      * Test cart page loads with a user session.

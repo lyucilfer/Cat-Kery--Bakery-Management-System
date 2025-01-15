@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 
 class OrderManagementTest extends TestCase
 {
-    private $baseUrl = 'http://localhost/cat-kery';
+    private $baseUrl = 'http://localhost:8000/';
 
     public function testPlaceOrder()
     {
