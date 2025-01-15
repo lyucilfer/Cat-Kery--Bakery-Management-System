@@ -31,8 +31,8 @@ jobs:
     - name: Start MySQL service
       run: |
         sudo service mysql start
-        mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE cat_kery;"
-        mysql -u root -p$MYSQL_ROOT_PASSWORD cat_kery < ./cat-kery.sql
+        mysql -u root -e "CREATE DATABASE cat_kery;"
+        mysql -u root cat_kery < ./cat-kery.sql
 
     # Step 4: Install Composer Dependencies
     - name: Install Composer Dependencies
