@@ -5,10 +5,12 @@ include 'components/connect.php';
 session_start();
 
 include 'components/session_helpers.php';
+
 $user_id = getUserId();
 
 include 'components/add_cart.php';
 include 'components/product_helpers.php';
+
 
 ?>
 
@@ -43,6 +45,7 @@ include 'components/product_helpers.php';
          while($fetch_products = $select_products->fetch(PDO::FETCH_ASSOC)){
    ?>
    <?php displayProductForm($fetch_products); ?>
+   
       <a href="quick_view.php?pid=<?= $fetch_products['id']; ?>" class="fas fa-eye"></a>
       <button type="submit" class="fas fa-shopping-cart" name="add_to_cart"></button>
       <?php displayProductImage($fetch_products['image']); ?>
@@ -52,6 +55,7 @@ include 'components/product_helpers.php';
          <div class="price"><span>$</span><?= $fetch_products['price']; ?></div>
          <input type="number" name="qty" class="qty" min="1" max="99" value="1" maxlength="2">
       </div>
+
    <?php
          }
       }else{

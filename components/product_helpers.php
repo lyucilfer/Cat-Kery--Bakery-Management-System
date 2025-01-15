@@ -1,4 +1,5 @@
 <?php
+
 function displayProductForm($product) {
     echo '<form action="" method="post" class="box">';
     echo '<input type="hidden" name="pid" value="' . htmlspecialchars($product['id']) . '">';
@@ -11,4 +12,5 @@ function displayProductForm($product) {
 function displayProductImage($image) {
     echo '<img src="uploaded_img/' . htmlspecialchars($image) . '" alt="">';
 }
-?> 
+
+?>

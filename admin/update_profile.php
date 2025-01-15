@@ -92,17 +92,6 @@ if(isset($_POST['submit'])){
 
 </section>
 
-<!-- admin profile update section ends -->
-
-
-
-
-
-
-
-
-
-<!-- custom js file link  -->
 <script src="../js/admin_script.js"></script>
 
 </body>
