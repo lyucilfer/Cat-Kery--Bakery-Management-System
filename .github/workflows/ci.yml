@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: 
 
     steps:
     # Step 1: Check out the repository
@@ -31,32 +31,20 @@ jobs:
     - name: Start MySQL service
       run: |
         sudo service mysql start
-        mysql -u root -p$MYSQL_ROOT_PASSWORD -e "SET GLOBAL sql_mode = 'NO_ENGINE_SUBSTITUTION';"
-        mysql -u root -p$MYSQL_ROOT_PASSWORD -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH 'mysql_native_password' BY '$MYSQL_ROOT_PASSWORD'; FLUSH PRIVILEGES;"
         mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE cat_kery;"
         mysql -u root -p$MYSQL_ROOT_PASSWORD cat_kery < ./cat-kery.sql
 
-    # Step 4: Clear Composer Cache and Install Dependencies
+    # Step 4: Install Composer Dependencies
     - name: Install Composer Dependencies
       run: |
         composer clear-cache
         rm -rf vendor
         composer install --prefer-dist
 
-    # Step 5: Start PHP Built-in Web Server
-    - name: Start PHP Web Server
-      run: |
-        php -S localhost -t cat-kery > /dev/null 2>&1 &
-      # Serve the project directory on localhost:8000
+    # Step 5: Verify Application Is Accessible
+    - name: Test Application Accessibility
+      run: curl http://localhost/cat-kery/
 
     # Step 6: Run PHPUnit Tests
     - name: Run PHPUnit Tests
       run: vendor/bin/phpunit
-
-    # Step 7: Archive Test Results (Optional)
-    - name: Upload Test Results
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-results
-        path: ./tests/
