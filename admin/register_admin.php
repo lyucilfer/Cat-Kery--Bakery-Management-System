@@ -1,7 +1,6 @@
 <?php
 
 include '../components/connect.php';
-include '../components/security_helpers.php';
 
 session_start();
 
@@ -15,8 +14,10 @@ if(isset($_POST['submit'])){
 
    $name = $_POST['name'];
    $name = filter_var($name, FILTER_SANITIZE_STRING);
-   $pass = hashPassword($_POST['pass']);
-   $cpass = hashPassword($_POST['cpass']);
+   $pass = sha1($_POST['pass']);
+   $pass = filter_var($pass, FILTER_SANITIZE_STRING);
+   $cpass = sha1($_POST['cpass']);
+   $cpass = filter_var($cpass, FILTER_SANITIZE_STRING);
 
    $select_admin = $conn->prepare("SELECT * FROM `admin` WHERE name = ?");
    $select_admin->execute([$name]);

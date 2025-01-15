@@ -1,7 +1,6 @@
 <?php
 
 include '../components/connect.php';
-include '../components/security_helpers.php';
 
 session_start();
 
@@ -9,7 +8,7 @@ if(isset($_POST['submit'])){
 
    $name = $_POST['name'];
    $name = filter_var($name, FILTER_SANITIZE_STRING);
-   $pass = hashPassword($_POST['pass']);
+   $pass = sha1($_POST['pass']);
    $pass = filter_var($pass, FILTER_SANITIZE_STRING);
 
    $select_admin = $conn->prepare("SELECT * FROM `admin` WHERE name = ? AND password = ?");
@@ -45,9 +44,16 @@ if(isset($_POST['submit'])){
 <body>
 
 <?php
-include '../components/message_helpers.php';
-
-displayMessages($message);
+if(isset($message)){
+   foreach($message as $message){
+      echo '
+      <div class="message">
+         <span>'.$message.'</span>
+         <i class="fas fa-times" onclick="this.parentElement.remove();"></i>
+      </div>
+      ';
+   }
+}
 ?>
 
 <!-- admin login form section starts  -->

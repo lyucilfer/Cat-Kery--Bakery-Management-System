@@ -1,6 +1,5 @@
 <?php
 include 'components/connect.php';
-include 'components/message_helpers.php';
 
 session_start();
 
@@ -35,7 +34,9 @@ if (isset($_POST['send'])) {
 }
 
 // Fetch only user's messages with replies
-$messages = fetchMessages($conn, $user_id);
+$select_messages = $conn->prepare("SELECT messages.*, replies.reply_message FROM `messages` LEFT JOIN replies ON messages.id = replies.message_id WHERE messages.user_id = ?");
+$select_messages->execute([$user_id]);
+$messages = $select_messages->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -86,7 +87,18 @@ $messages = fetchMessages($conn, $user_id);
     <div class="messages-container">
         <?php
             foreach ($messages as $message) {
-                renderMessage($message);
+                echo '<div class="message">';
+                echo '<p>Name: ' . $message['name'] . '</p>';
+                echo '<p>Number: ' . $message['number'] . '</p>';
+                echo '<p>Email: ' . $message['email'] . '</p>';
+                echo '<p>Message: ' . $message['message'] . '</p>';
+
+                // Display reply if available
+                if (!empty($message['reply_message'])) {
+                    echo '<p>Admin Reply: ' . $message['reply_message'] . '</p>';
+                }
+
+                echo '</div>';
             }
         ?>
     </div>

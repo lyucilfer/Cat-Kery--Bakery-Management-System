@@ -15,10 +15,6 @@ if (isset($_GET['delete'])) {
     $delete_message->execute([$delete_id]);
     header('location:messages.php');
 }
-
-include '../components/message_helpers.php';
-
-$messages = fetchMessages($conn);
 ?>
 
 <!DOCTYPE html>

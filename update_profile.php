@@ -1,11 +1,15 @@
 <?php
 
 include 'components/connect.php';
-include 'components/session_helpers.php';
 
 session_start();
 
-$user_id = getUserId();
+if(isset($_SESSION['user_id'])){
+   $user_id = $_SESSION['user_id'];
+}else{
+   $user_id = '';
+   header('location:home.php');
+};
 
 if(isset($_POST['submit'])){
 
