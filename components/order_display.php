@@ -2,7 +2,8 @@ class OrderDisplay {
     public static function render(array $order, bool $isAdmin = false): string {
         $statusColor = $order['payment_status'] == 'Pending' ? 'red' : 'green';
         
-        return <<<HTML
+        return <<<HTML lang="en" xml:lang="en"
+        <!DOCTYPE html>
         <div class="box">
             <p>Placed on : <span>{$order['placed_on']}</span></p>
             <p>Name : <span>{$order['name']}</span></p>
@@ -14,14 +15,15 @@ class OrderDisplay {
     }
 
     private static function renderAdminControls(array $order): string {
-        return <<<HTML
+        return <<<HTML lang="en" xml:lang="en"
+        <!DOCTYPE html>
         <form action="" method="POST">
             <input type="hidden" name="order_id" value="{$order['id']}">
             <select name="payment_status" class="drop-down">
                 <option value="Pending">Pending</option>
                 <option value="Completed">Completed</option>
             </select>
-            <input type="submit" value="update" class="btn" name="update_payment">
+            <input type="submit" value="Update" class="btn" name="update_payment">
         </form>
         HTML;
     }
