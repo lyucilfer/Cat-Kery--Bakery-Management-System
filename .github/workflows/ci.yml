@@ -39,7 +39,7 @@ jobs:
 
     # Step 4: Install Composer Dependencies
     - name: Install Composer Dependencies
-      run: composer install --prefer-dist
+      run: composer install --no-dev --prefer-dist
 
     # Step 5: Run PHPUnit Tests
     - name: Run PHPUnit Tests
