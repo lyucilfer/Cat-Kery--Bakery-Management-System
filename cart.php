@@ -1,10 +1,12 @@
 <?php
 
-include 'components/connect.php';
+use App\Components\Connect;
 
 session_start();
 
-include 'components/session_helpers.php';
+use App\Components\SessionHelpers;
+use App\Components\ProductHelpers;
+
 $user_id = getUserId();
 
 if(isset($_POST['delete'])){
@@ -17,7 +19,6 @@ if(isset($_POST['delete'])){
 if(isset($_POST['delete_all'])){
    $delete_cart_item = $conn->prepare("DELETE FROM `cart` WHERE user_id = ?");
    $delete_cart_item->execute([$user_id]);
-   // header('location:cart.php');
    $message[] = 'Deleted all from cart!';
 }
 
@@ -52,7 +53,7 @@ $grand_total = 0;
 <body>
    
 <!-- header section starts  -->
-<?php include 'components/user_header.php'; ?>
+<?php use App\Components\UserHeader; ?>
 <!-- header section ends -->
 
 <div class="heading">
@@ -79,7 +80,7 @@ $grand_total = 0;
          <input type="hidden" name="cart_id" value="<?= $fetch_cart['id']; ?>">
          <a href="quick_view.php?pid=<?= $fetch_cart['pid']; ?>" class="fas fa-eye"></a>
          <button type="submit" class="fas fa-times" name="delete" onclick="return confirm('Delete this item?');"></button>
-         <img src="uploaded_img/<?= $fetch_cart['image']; ?>" alt="">
+         <?php displayProductForm($fetch_products); ?> 
          <div class="name"><?= $fetch_cart['name']; ?></div>
          <div class="flex">
             <div class="price"><span>$</span><?= $fetch_cart['price']; ?></div>
@@ -124,7 +125,7 @@ $grand_total = 0;
 
 
 <!-- footer section starts  -->
-<?php include 'components/footer.php'; ?>
+<?php use App\Components\Footer; ?>
 <!-- footer section ends -->
 
 

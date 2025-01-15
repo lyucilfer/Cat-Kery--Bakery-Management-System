@@ -1,11 +1,14 @@
 <?php
+
 function displayMessages($messages) {
     if (isset($messages)) {
         foreach ($messages as $message) {
             echo '
             <div class="message">
+
                 <span>' . htmlspecialchars($message) . '</span>
                 <i class="fas fa-times" onclick="this.parentElement.remove();"></i>
+            
             </div>
             ';
         }
@@ -43,4 +46,5 @@ function renderMessage($message, $isAdmin = false) {
 
     echo '</div>';
 }
+
 ?> 

@@ -50,8 +50,6 @@ include '../components/message_helpers.php';
 displayMessages($message);
 ?>
 
-<!-- admin login form section starts  -->
-
 <section class="form-container">
 
    <form action="" method="POST">
@@ -63,18 +61,6 @@ displayMessages($message);
    </form>
 
 </section>
-
-<!-- admin login form section ends -->
-
-
-
-
-
-
-
-
-
-
 
 </body>
 </html>
