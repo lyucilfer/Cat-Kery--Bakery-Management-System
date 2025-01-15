@@ -37,10 +37,11 @@ jobs:
         mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE cat_kery;"
         mysql -u root -p$MYSQL_ROOT_PASSWORD cat_kery < ./cat-kery.sql
 
-    # Step 4: Install Composer Dependencies
+    # Step 4: Clear Composer Cache and Install Dependencies
     - name: Install Composer Dependencies
       run: |
         composer clear-cache
+        rm -rf vendor
         composer install --prefer-dist
 
     # Step 5: Start PHP Built-in Web Server
