@@ -41,6 +41,7 @@ jobs:
     - name: Install Composer Dependencies
       run: |
         composer clear-cache
+        rm -rf vendor
         composer install --prefer-dist
 
     # Step 5: Start PHP Built-in Web Server
