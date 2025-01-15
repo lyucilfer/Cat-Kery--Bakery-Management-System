@@ -45,21 +45,24 @@ jobs:
     # Step 5: Start PHP Web Server
     - name: Start PHP Web Server
       run: |
-        php -S localhost:$SERVER_PORT -t ./cat-kery > server.log 2>&1 &
+        php -S 127.0.0.1:$SERVER_PORT -t ./cat-kery > server.log 2>&1 &
     
     # Debugging Steps
+    - name: Debug PHP Server Logs
+      run: cat server.log
+
     - name: Debug Running Processes
       run: ps aux | grep php
 
-    - name: Debug PHP Server Logs
-      run: cat server.log
+    - name: Verify PHP Installation
+      run: php --version
 
     - name: Check Port Availability
       run: sudo netstat -tuln | grep :$SERVER_PORT || echo "Port is available"
 
     # Step 6: Verify Server Accessibility
     - name: Test Application Accessibility
-      run: curl -v http://localhost:$SERVER_PORT/
+      run: curl -v http://127.0.0.1:$SERVER_PORT/
 
     # Step 7: Run PHPUnit Tests
     - name: Run PHPUnit Tests
