@@ -12,9 +12,6 @@ jobs:
   php-tests:
     runs-on: ubuntu-latest
 
-    env:
-      MYSQL_ROOT_PASSWORD: root
-
     steps:
     # Step 1: Check out the repository
     - name: Checkout Code
@@ -26,25 +23,29 @@ jobs:
       with:
         php-version: '8.1'
         extensions: pdo_mysql
+        ini-values: memory_limit=512M
 
-    # Step 3: Configure and Start MySQL
+    # Step 3: Start and Configure MySQL
     - name: Start MySQL service
       run: |
         sudo service mysql start
-        mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE cat_kery;"
-        mysql -u root -p$MYSQL_ROOT_PASSWORD cat_kery < ./cat-kery.sql
+        mysql -e "CREATE DATABASE IF NOT EXISTS cat_kery;"
+        mysql cat_kery < ./cat-kery.sql
 
     # Step 4: Install Composer Dependencies
     - name: Install Composer Dependencies
-      run: |
-        composer clear-cache
-        rm -rf vendor
-        composer install --prefer-dist
+      run: composer install --prefer-dist --no-progress --no-suggest
 
-    # Step 5: Verify Application Is Accessible
-    - name: Test Application Accessibility
-      run: curl http://localhost/cat-kery/
+    # Step 5: Serve Application Using PHP Built-In Server
+    - name: Start PHP Built-In Server
+      run: php -S localhost:8000 -t . > /dev/null 2>&1 &
+      env:
+        APP_ENV: testing
 
-    # Step 6: Run PHPUnit Tests
+    # Step 6: Test Application Accessibility
+    - name: Verify Application Accessibility
+      run: curl --fail http://localhost:8000/cat-kery/
+
+    # Step 7: Run PHPUnit Tests
     - name: Run PHPUnit Tests
-      run: vendor/bin/phpunit
+      run: vendor/bin/phpunit --testdox
