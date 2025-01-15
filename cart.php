@@ -1,11 +1,11 @@
 <?php
 
-include 'components/connect.php';
+use App\Components\Connect;
 
 session_start();
 
-include 'components/session_helpers.php'; 
-include 'components/product_helpers.php';
+use App\Components\SessionHelpers;
+use App\Components\ProductHelpers;
 
 $user_id = getUserId();
 
@@ -19,7 +19,6 @@ if(isset($_POST['delete'])){
 if(isset($_POST['delete_all'])){
    $delete_cart_item = $conn->prepare("DELETE FROM `cart` WHERE user_id = ?");
    $delete_cart_item->execute([$user_id]);
-   // header('location:cart.php');
    $message[] = 'Deleted all from cart!';
 }
 
@@ -54,7 +53,7 @@ $grand_total = 0;
 <body>
    
 <!-- header section starts  -->
-<?php include 'components/user_header.php'; ?>
+<?php use App\Components\UserHeader; ?>
 <!-- header section ends -->
 
 <div class="heading">
@@ -126,7 +125,7 @@ $grand_total = 0;
 
 
 <!-- footer section starts  -->
-<?php include 'components/footer.php'; ?>
+<?php use App\Components\Footer; ?>
 <!-- footer section ends -->
 
 

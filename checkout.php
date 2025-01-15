@@ -1,6 +1,6 @@
 <?php
 
-include 'components/connect.php';
+use App\Components\Connect;
 
 session_start();
 
@@ -9,10 +9,10 @@ if(isset($_SESSION['user_id'])){
 }else{
    $user_id = '';
    header('location:home.php');
-};
+}
 
-require_once 'components/order_repository.php';
-require_once 'components/order_service.php';
+use App\Components\OrderRepository;
+use App\Components\OrderService;
 
 if(isset($_POST['submit'])){
 
@@ -55,7 +55,7 @@ if(isset($_POST['submit'])){
             $message[] = 'Order placed successfully!';
          } catch (Exception $e) {
             $message[] = $e->getMessage();
-         }   
+         }
 
          $delete_cart = $conn->prepare("DELETE FROM `cart` WHERE user_id = ?");
          $delete_cart->execute([$user_id]);
@@ -89,7 +89,7 @@ if(isset($_POST['submit'])){
 <body>
    
 <!-- header section starts  -->
-<?php include 'components/user_header.php'; ?>
+<?php use App\Components\UserHeader; ?>
 <!-- header section ends -->
 
 <div class="heading">
@@ -166,7 +166,7 @@ if(isset($_POST['submit'])){
 
 
 <!-- footer section starts  -->
-<?php include 'components/footer.php'; ?>
+<?php use App\Components\Footer; ?>
 <!-- footer section ends -->
 
 

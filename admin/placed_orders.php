@@ -1,7 +1,7 @@
 <?php
 
-include '../components/connect.php';
-require_once 'components/order_display.php';
+use App\Components\Connect;
+use App\Components\OrderDisplay;
 
 session_start();
 
@@ -9,7 +9,7 @@ $admin_id = $_SESSION['admin_id'];
 
 if(!isset($admin_id)){
    header('location:admin_login.php');
-};
+}
 
 if(isset($_POST['update_payment'])){
 
@@ -47,7 +47,7 @@ if(isset($_GET['delete'])){
 </head>
 <body>
 
-<?php include '../components/admin_header.php' ?>
+<?php use App\Components\AdminHeader; ?>
 
 <!-- placed orders section starts  -->
 
@@ -66,7 +66,7 @@ if(isset($_GET['delete'])){
          }
       }else{
          echo '<p class="empty">No orders placed yet!</p>';
-      }   
+      }
    ?>
 
    </div>
