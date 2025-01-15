@@ -38,8 +38,9 @@ jobs:
 
     # Step 4: Install Composer Dependencies
     - name: Install Composer Dependencies
-      rm -rf vendor
-      run: composer install --prefer-dist
+      run: |
+        rm -rf vendor
+        composer install --prefer-dist
 
     # Step 5: Start PHP Web Server
     - name: Start PHP Web Server
