@@ -1,7 +1,7 @@
 <?php
 
-include 'components/connect.php';
-require_once 'components/order_display.php';
+use App\Components\Connect;
+use App\Components\OrderDisplay;
 
 session_start();
 
@@ -10,7 +10,7 @@ if(isset($_SESSION['user_id'])){
 }else{
    $user_id = '';
    header('location:home.php');
-};
+}
 
 ?>
 
@@ -32,7 +32,7 @@ if(isset($_SESSION['user_id'])){
 <body>
    
 <!-- header section starts  -->
-<?php include 'components/user_header.php'; ?>
+<?php use App\Components\UserHeader; ?>
 <!-- header section ends -->
 
 <div class="heading">
@@ -73,7 +73,7 @@ if(isset($_SESSION['user_id'])){
 
 
 <!-- footer section starts  -->
-<?php include 'components/footer.php'; ?>
+<?php use App\Components\Footer; ?>
 <!-- footer section ends -->
 
 

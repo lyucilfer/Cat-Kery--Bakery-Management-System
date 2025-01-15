@@ -9,8 +9,8 @@ class OrderRepository {
     public function createOrder(array $orderData): int {
         try {
             $stmt = $this->conn->prepare("
-                INSERT INTO {$this->table} 
-                (user_id, name, number, email, method, address, total_products, total_price, payment_status) 
+                INSERT INTO {$this->table}
+                (user_id, name, number, email, method, address, total_products, total_price, payment_status)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending')
             ");
 
