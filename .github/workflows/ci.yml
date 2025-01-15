@@ -14,7 +14,6 @@ jobs:
 
     env:
       MYSQL_ROOT_PASSWORD: root
-      SERVER_PORT: 8000
 
     steps:
     # Step 1: Check out the repository
@@ -27,7 +26,6 @@ jobs:
       with:
         php-version: '8.1'
         extensions: pdo_mysql
-        ini-values: memory_limit=512M
 
     # Step 3: Configure and Start MySQL
     - name: Start MySQL service
@@ -35,28 +33,30 @@ jobs:
         sudo service mysql start
         mysql -u root -p$MYSQL_ROOT_PASSWORD -e "SET GLOBAL sql_mode = 'NO_ENGINE_SUBSTITUTION';"
         mysql -u root -p$MYSQL_ROOT_PASSWORD -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH 'mysql_native_password' BY '$MYSQL_ROOT_PASSWORD'; FLUSH PRIVILEGES;"
-        mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE IF NOT EXISTS cat_kery;"
+        mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE cat_kery;"
         mysql -u root -p$MYSQL_ROOT_PASSWORD cat_kery < ./cat-kery.sql
 
-    # Step 4: Install Composer Dependencies
+    # Step 4: Clear Composer Cache and Install Dependencies
     - name: Install Composer Dependencies
       run: |
         composer clear-cache
         rm -rf vendor
-        composer install --prefer-dist --no-progress --no-suggest
+        composer install --prefer-dist
 
-    # Step 5: Start PHP Built-In Server
-    - name: Start PHP Web Server
+    # Step 5: Verify PHPUnit Installation
+    - name: Verify PHPUnit Installation
       run: |
-        php -S 127.0.0.1:$SERVER_PORT -t . &
-        sleep 3
-      env:
-        APP_ENV: testing
+        ls vendor/bin
+        composer show phpunit/phpunit
 
-    # Step 6: Verify PHP Server
-    - name: Test Application Accessibility
-      run: curl --fail http://127.0.0.1:$SERVER_PORT/cat-kery/
-
-    # Step 7: Run PHPUnit Tests
+    # Step 6: Run PHPUnit Tests
     - name: Run PHPUnit Tests
-      run: vendor/bin/phpunit --testdox
+      run: vendor/bin/phpunit
+
+    # Step 7: Archive Test Results (Optional)
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: ./tests/
