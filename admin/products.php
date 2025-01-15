@@ -1,6 +1,9 @@
 <?php
 
 include '../components/connect.php';
+include '../components/image_handler.php';
+include '../components/input_sanitizer.php';
+include '../components/products_repository.php';
 
 session_start();
 
@@ -12,12 +15,12 @@ if(!isset($admin_id)){
 
 if(isset($_POST['add_product'])){
 
-   $name = $_POST['name'];
-   $name = filter_var($name, FILTER_SANITIZE_STRING);
-   $price = $_POST['price'];
-   $price = filter_var($price, FILTER_SANITIZE_STRING);
-   $category = $_POST['category'];
-   $category = filter_var($category, FILTER_SANITIZE_STRING);
+   try {
+      $productData = InputSanitizer::sanitizeProductInput($_POST);
+      $productId = InputSanitizer::validateId($_GET['id'] ?? 0);
+   } catch (InvalidArgumentException $e){
+      $message[] = $e->getMessage();
+   }
 
    $image = $_FILES['image']['name'];
    $image = filter_var($image, FILTER_SANITIZE_STRING);
@@ -25,23 +28,28 @@ if(isset($_POST['add_product'])){
    $image_tmp_name = $_FILES['image']['tmp_name'];
    $image_folder = '../uploaded_img/'.$image;
 
-   $select_products = $conn->prepare("SELECT * FROM `products` WHERE name = ?");
-   $select_products->execute([$name]);
+   try {
+      $productRepo = new ProductRepository($conn);
+
+      $productId = $productRepo->create($productData, $imageName);
+
+      $productRepo->update($productId, $updatedData);
+
+      $productRepo->delete($productId);
+
+   } catch (Exception $e) {
+      $message[] = $e->getMessage();
+   }
 
    if($select_products->rowCount() > 0){
       $message[] = 'Product name already exists!';
    }else{
-      if($image_size > 2000000){
-         $message[] = 'Image size is too large';
-      }else{
-         move_uploaded_file($image_tmp_name, $image_folder);
-
-         $insert_product = $conn->prepare("INSERT INTO `products`(name, category, price, image) VALUES(?,?,?,?)");
-         $insert_product->execute([$name, $category, $price, $image]);
-
-         $message[] = 'New product added!';
+      try {
+         $imageHandler = new ImageHandler('../uploaded_img');
+         $imageName = $imageHandler->handleImageUpload($_FILES['image']);
+      } catch (Exception $e) {
+         $message[] = $e->getMessage();
       }
-
    }
 
 }
