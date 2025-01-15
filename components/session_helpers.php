@@ -8,6 +8,7 @@ function getUserId() {
     }
 }
 
+
 function getAdminId() {
     if (isset($_SESSION['admin_id'])) {
         return $_SESSION['admin_id'];
