@@ -1,16 +1,15 @@
 <?php
 
-include 'components/connect.php';
+use App\Components\Connect;
 
 session_start();
 
-include 'components/session_helpers.php';
-include 'components/product_helpers.php';
+use App\Components\SessionHelpers;
+use App\Components\ProductHelpers;
 
 $user_id = getUserId();
 
-include 'components/add_cart.php';
-
+use App\Components\AddCart;
 
 ?>
 
@@ -32,7 +31,7 @@ include 'components/add_cart.php';
 <body>
    
 <!-- header section starts  -->
-<?php include 'components/user_header.php'; ?>
+<?php use App\Components\UserHeader; ?>
 <!-- header section ends -->
 
 <div class="heading">
@@ -54,7 +53,7 @@ include 'components/add_cart.php';
          if($select_products->rowCount() > 0){
             while($fetch_products = $select_products->fetch(PDO::FETCH_ASSOC)){
       ?>
-      <?php displayProductForm($fetch_products); ?> 
+      <?php displayProductForm($fetch_products); ?>
 
          <a href="quick_view.php?pid=<?= $fetch_products['id']; ?>" class="fas fa-eye"></a>
          <button type="submit" class="fas fa-shopping-cart" name="add_to_cart"></button>
@@ -104,7 +103,7 @@ include 'components/add_cart.php';
 
 
 <!-- footer section starts  -->
-<?php include 'components/footer.php'; ?>
+<?php use App\Components\Footer; ?>
 <!-- footer section ends -->
 
 
