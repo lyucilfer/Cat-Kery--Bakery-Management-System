@@ -4,7 +4,9 @@ include 'components/connect.php';
 
 session_start();
 
-include 'components/session_helpers.php';
+include 'components/session_helpers.php'; 
+include 'components/product_helpers.php';
+
 $user_id = getUserId();
 
 if(isset($_POST['delete'])){
@@ -79,7 +81,7 @@ $grand_total = 0;
          <input type="hidden" name="cart_id" value="<?= $fetch_cart['id']; ?>">
          <a href="quick_view.php?pid=<?= $fetch_cart['pid']; ?>" class="fas fa-eye"></a>
          <button type="submit" class="fas fa-times" name="delete" onclick="return confirm('Delete this item?');"></button>
-         <img src="uploaded_img/<?= $fetch_cart['image']; ?>" alt="">
+         <?php displayProductForm($fetch_products); ?> 
          <div class="name"><?= $fetch_cart['name']; ?></div>
          <div class="flex">
             <div class="price"><span>$</span><?= $fetch_cart['price']; ?></div>
