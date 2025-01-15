@@ -1,9 +1,9 @@
 <?php
 
-include '../components/connect.php';
-include '../components/image_handler.php';
-include '../components/input_sanitizer.php';
-include '../components/products_repository.php';
+use App\Components\Connect;
+use App\Components\ImageHandler;
+use App\Components\InputSanitizer;
+use App\Components\ProductsRepository;
 
 session_start();
 
@@ -11,7 +11,7 @@ $admin_id = $_SESSION['admin_id'];
 
 if(!isset($admin_id)){
    header('location:admin_login.php');
-};
+}
 
 if(isset($_POST['add_product'])){
 
@@ -88,7 +88,7 @@ if(isset($_GET['delete'])){
 </head>
 <body>
 
-<?php include '../components/admin_header.php' ?>
+<?php use App\Components\AdminHeader; ?>
 
 <!-- add products section starts  -->
 
@@ -123,7 +123,7 @@ if(isset($_GET['delete'])){
       $show_products = $conn->prepare("SELECT * FROM `products`");
       $show_products->execute();
       if($show_products->rowCount() > 0){
-         while($fetch_products = $show_products->fetch(PDO::FETCH_ASSOC)){  
+         while($fetch_products = $show_products->fetch(PDO::FETCH_ASSOC)){
    ?>
    <div class="box">
       <img src="../uploaded_img/<?= $fetch_products['image']; ?>" alt="">
