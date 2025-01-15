@@ -27,6 +27,7 @@ jobs:
       with:
         php-version: '8.1'
         extensions: pdo_mysql
+        ini-values: memory_limit=512M
 
     # Step 3: Configure and Start MySQL
     - name: Start MySQL service
@@ -34,7 +35,7 @@ jobs:
         sudo service mysql start
         mysql -u root -p$MYSQL_ROOT_PASSWORD -e "SET GLOBAL sql_mode = 'NO_ENGINE_SUBSTITUTION';"
         mysql -u root -p$MYSQL_ROOT_PASSWORD -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH 'mysql_native_password' BY '$MYSQL_ROOT_PASSWORD'; FLUSH PRIVILEGES;"
-        mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE cat_kery;"
+        mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE IF NOT EXISTS cat_kery;"
         mysql -u root -p$MYSQL_ROOT_PASSWORD cat_kery < ./cat-kery.sql
 
     # Step 4: Install Composer Dependencies
@@ -42,26 +43,20 @@ jobs:
       run: |
         composer clear-cache
         rm -rf vendor
-        composer install --prefer-dist
+        composer install --prefer-dist --no-progress --no-suggest
 
-    # Step 5: Start PHP Built-in Web Server
+    # Step 5: Start PHP Built-In Server
     - name: Start PHP Web Server
       run: |
-        php -S localhost:$SERVER_PORT -t ./cat-kery > /dev/null 2>&1 &
-      # Serve the "cat-kery" directory on localhost:8000
+        php -S 127.0.0.1:$SERVER_PORT -t . &
+        sleep 3
+      env:
+        APP_ENV: testing
 
-    # Step 6: Verify Server Accessibility
+    # Step 6: Verify PHP Server
     - name: Test Application Accessibility
-      run: curl --fail http://localhost:$SERVER_PORT/
+      run: curl --fail http://127.0.0.1:$SERVER_PORT/cat-kery/
 
     # Step 7: Run PHPUnit Tests
     - name: Run PHPUnit Tests
       run: vendor/bin/phpunit --testdox
-
-    # Step 8: Archive Test Results (Optional)
-    - name: Upload Test Results
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-results
-        path: ./tests/
