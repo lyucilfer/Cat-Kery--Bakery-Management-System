@@ -21,7 +21,7 @@ jobs:
     - name: Set up PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.2' # Use the PHP version required for your project
+        php-version: '8.1' # Use the PHP version required for your project
         extensions: pdo_mysql # Add any PHP extensions you need
 
     # Step 3: Install dependencies
