@@ -12,6 +12,9 @@ jobs:
   php-tests:
     runs-on: ubuntu-latest
 
+    env:
+      MYSQL_ROOT_PASSWORD: root
+
     steps:
     # Step 1: Check out the repository
     - name: Checkout Code
@@ -24,12 +27,12 @@ jobs:
         php-version: '8.1'
         extensions: pdo_mysql
 
-    # Step 3: Start MySQL Service and Configure Database
-    - name: Start MySQL Service
+    # Step 3: Configure and Start MySQL
+    - name: Start MySQL service
       run: |
         sudo service mysql start
-        mysql -u root -e "CREATE DATABASE IF NOT EXISTS cat_kery;"
-        mysql -u root cat_kery < ./cat-kery.sql
+        mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE cat_kery;"
+        mysql -u root -p$MYSQL_ROOT_PASSWORD cat_kery < ./cat-kery.sql
 
     # Step 4: Install Composer Dependencies
     - name: Install Composer Dependencies
@@ -38,8 +41,8 @@ jobs:
         rm -rf vendor
         composer install --prefer-dist
 
-    # Step 5: Verify Application Accessibility
-    - name: Verify Application Accessibility
+    # Step 5: Verify Application Is Accessible
+    - name: Test Application Accessibility
       run: curl http://localhost/cat-kery/
 
     # Step 6: Run PHPUnit Tests
