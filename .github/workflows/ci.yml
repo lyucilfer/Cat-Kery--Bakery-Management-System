@@ -1,0 +1,48 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  php-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Check out the repository
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    # Step 2: Set up PHP environment
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.1' # Use the PHP version required for your project
+        extensions: pdo_mysql # Add any PHP extensions you need
+
+    # Step 3: Install dependencies
+    - name: Install Composer Dependencies
+      run: composer install
+
+    # Step 4: Start a MySQL database service
+    - name: Start MySQL service
+      run: |
+        sudo service mysql start
+        mysql -e 'CREATE DATABASE cat_kery;'
+        mysql cat_kery < ./cat-kery.sql # Import your database schema if needed
+
+    # Step 5: Run PHPUnit Tests
+    - name: Run PHPUnit Tests
+      run: vendor/bin/phpunit
+
+    # Step 6: Archive Test Results (Optional)
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: ./tests/
