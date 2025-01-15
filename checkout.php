@@ -1,6 +1,6 @@
 <?php
 
-include 'components/connect.php';
+use App\Components\Connect;
 
 session_start();
 
@@ -9,7 +9,10 @@ if(isset($_SESSION['user_id'])){
 }else{
    $user_id = '';
    header('location:home.php');
-};
+}
+
+use App\Components\OrderRepository;
+use App\Components\OrderService;
 
 if(isset($_POST['submit'])){
 
@@ -35,8 +38,24 @@ if(isset($_POST['submit'])){
          $message[] = 'Please add your address!';
       }else{
          
-         $insert_order = $conn->prepare("INSERT INTO `orders`(user_id, name, number, email, method, address, total_products, total_price) VALUES(?,?,?,?,?,?,?,?)");
-         $insert_order->execute([$user_id, $name, $number, $email, $method, $address, $total_products, $total_price]);
+         try {
+            $orderRepo = new OrderRepository($conn);
+            $orderData = [
+               'user_id' => $user_id,
+               'name' => filter_var($_POST['name'], FILTER_SANITIZE_STRING),
+               'number' => filter_var($_POST['number'], FILTER_SANITIZE_STRING),
+               'email' => filter_var($_POST['email'], FILTER_SANITIZE_STRING),
+               'method' => filter_var($_POST['method'], FILTER_SANITIZE_STRING),
+               'address' => filter_var($_POST['address'], FILTER_SANITIZE_STRING),
+               'total_products' => $_POST['total_products'],
+               'total_price' => $_POST['total_price'],
+            ];
+
+            $orderId = $orderRepo->createOrder($orderData);
+            $message[] = 'Order placed successfully!';
+         } catch (Exception $e) {
+            $message[] = $e->getMessage();
+         }
 
          $delete_cart = $conn->prepare("DELETE FROM `cart` WHERE user_id = ?");
          $delete_cart->execute([$user_id]);
@@ -70,7 +89,7 @@ if(isset($_POST['submit'])){
 <body>
    
 <!-- header section starts  -->
-<?php include 'components/user_header.php'; ?>
+<?php use App\Components\UserHeader; ?>
 <!-- header section ends -->
 
 <div class="heading">
@@ -147,7 +166,7 @@ if(isset($_POST['submit'])){
 
 
 <!-- footer section starts  -->
-<?php include 'components/footer.php'; ?>
+<?php use App\Components\Footer; ?>
 <!-- footer section ends -->
 
 
