@@ -1,4 +1,5 @@
 <?php
+
 function displayMessages($messages) {
     if (isset($messages)) {
         foreach ($messages as $message) {
@@ -43,4 +44,5 @@ function renderMessage($message, $isAdmin = false) {
 
     echo '</div>';
 }
+
 ?> 

@@ -1,4 +1,5 @@
 <?php
+
 function getUserId() {
     if (isset($_SESSION['user_id'])) {
         return $_SESSION['user_id'];
@@ -8,7 +9,6 @@ function getUserId() {
     }
 }
 
-
 function getAdminId() {
     if (isset($_SESSION['admin_id'])) {
         return $_SESSION['admin_id'];
@@ -17,4 +17,5 @@ function getAdminId() {
         exit;
     }
 }
+
 ?> 
