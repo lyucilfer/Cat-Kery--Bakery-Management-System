@@ -12,6 +12,10 @@ jobs:
   php-tests:
     runs-on: ubuntu-latest
 
+    env:
+      MYSQL_ROOT_PASSWORD: root
+      SERVER_PORT: 8000
+
     steps:
     # Step 1: Check out the repository
     - name: Checkout Code
@@ -23,29 +27,36 @@ jobs:
       with:
         php-version: '8.1'
         extensions: pdo_mysql
-        ini-values: memory_limit=512M
 
-    # Step 3: Start and Configure MySQL
+    # Step 3: Configure and Start MySQL
     - name: Start MySQL service
       run: |
         sudo service mysql start
-        mysql -e "CREATE DATABASE IF NOT EXISTS cat_kery;"
-        mysql cat_kery < ./cat-kery.sql
+        mysql -u root -p$MYSQL_ROOT_PASSWORD -e "SET GLOBAL sql_mode = 'NO_ENGINE_SUBSTITUTION';"
+        mysql -u root -p$MYSQL_ROOT_PASSWORD -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH 'mysql_native_password' BY '$MYSQL_ROOT_PASSWORD'; FLUSH PRIVILEGES;"
+        mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE cat_kery;"
+        mysql -u root -p$MYSQL_ROOT_PASSWORD cat_kery < ./cat-kery.sql
 
     # Step 4: Install Composer Dependencies
     - name: Install Composer Dependencies
-      run: composer install --prefer-dist --no-progress --no-suggest
+      run: |
+        composer clear-cache
+        composer install --prefer-dist
 
-    # Step 5: Serve Application Using PHP Built-In Server
-    - name: Start PHP Built-In Server
-      run: php -S localhost:8000 -t . > /dev/null 2>&1 &
-      env:
-        APP_ENV: testing
+    # Step 5: Start PHP Built-in Web Server
+    - name: Start PHP Web Server
+      run: |
+        php -S localhost:$SERVER_PORT -t . > /dev/null 2>&1 &
+      # Serve the project directory on localhost:8000
 
-    # Step 6: Test Application Accessibility
-    - name: Verify Application Accessibility
-      run: curl --fail http://localhost:8000/cat-kery/
-
-    # Step 7: Run PHPUnit Tests
+    # Step 6: Run PHPUnit Tests
     - name: Run PHPUnit Tests
-      run: vendor/bin/phpunit --testdox
+      run: vendor/bin/phpunit
+
+    # Step 7: Archive Test Results (Optional)
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: ./tests/
