@@ -7,7 +7,7 @@ session_start();
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
 } else {
-    header('location: login.php'); // Redirect to login page if not logged in
+    header('location: login.php');
     exit();
 }
 
@@ -34,7 +34,6 @@ if (isset($_POST['send'])) {
     }
 }
 
-// Fetch only user's messages with replies
 $messages = fetchMessages($conn, $user_id);
 ?>
 
