@@ -36,6 +36,7 @@ jobs:
         mysql -u root -p$MYSQL_ROOT_PASSWORD -e "CREATE DATABASE cat_kery;"
         mysql -u root -p$MYSQL_ROOT_PASSWORD cat_kery < ./cat-kery.sql
 
+
     # Step 4: Install Composer Dependencies
     - name: Install Composer Dependencies
       run: composer install --no-dev --prefer-dist
