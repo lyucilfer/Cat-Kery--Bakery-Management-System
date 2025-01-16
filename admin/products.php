@@ -1,6 +1,9 @@
 <?php
 
-include '../components/connect.php';
+use App\Components\Connect;
+use App\Components\ImageHandler;
+use App\Components\InputSanitizer;
+use App\Components\ProductsRepository;
 
 session_start();
 
@@ -8,16 +11,16 @@ $admin_id = $_SESSION['admin_id'];
 
 if(!isset($admin_id)){
    header('location:admin_login.php');
-};
+}
 
 if(isset($_POST['add_product'])){
 
-   $name = $_POST['name'];
-   $name = filter_var($name, FILTER_SANITIZE_STRING);
-   $price = $_POST['price'];
-   $price = filter_var($price, FILTER_SANITIZE_STRING);
-   $category = $_POST['category'];
-   $category = filter_var($category, FILTER_SANITIZE_STRING);
+   try {
+      $productData = InputSanitizer::sanitizeProductInput($_POST);
+      $productId = InputSanitizer::validateId($_GET['id'] ?? 0);
+   } catch (InvalidArgumentException $e){
+      $message[] = $e->getMessage();
+   }
 
    $image = $_FILES['image']['name'];
    $image = filter_var($image, FILTER_SANITIZE_STRING);
@@ -25,23 +28,28 @@ if(isset($_POST['add_product'])){
    $image_tmp_name = $_FILES['image']['tmp_name'];
    $image_folder = '../uploaded_img/'.$image;
 
-   $select_products = $conn->prepare("SELECT * FROM `products` WHERE name = ?");
-   $select_products->execute([$name]);
+   try {
+      $productRepo = new ProductRepository($conn);
+
+      $productId = $productRepo->create($productData, $imageName);
+
+      $productRepo->update($productId, $updatedData);
+
+      $productRepo->delete($productId);
+
+   } catch (Exception $e) {
+      $message[] = $e->getMessage();
+   }
 
    if($select_products->rowCount() > 0){
       $message[] = 'Product name already exists!';
    }else{
-      if($image_size > 2000000){
-         $message[] = 'Image size is too large';
-      }else{
-         move_uploaded_file($image_tmp_name, $image_folder);
-
-         $insert_product = $conn->prepare("INSERT INTO `products`(name, category, price, image) VALUES(?,?,?,?)");
-         $insert_product->execute([$name, $category, $price, $image]);
-
-         $message[] = 'New product added!';
+      try {
+         $imageHandler = new ImageHandler('../uploaded_img');
+         $imageName = $imageHandler->handleImageUpload($_FILES['image']);
+      } catch (Exception $e) {
+         $message[] = $e->getMessage();
       }
-
    }
 
 }
@@ -80,7 +88,7 @@ if(isset($_GET['delete'])){
 </head>
 <body>
 
-<?php include '../components/admin_header.php' ?>
+<?php use App\Components\AdminHeader; ?>
 
 <!-- add products section starts  -->
 
@@ -115,7 +123,7 @@ if(isset($_GET['delete'])){
       $show_products = $conn->prepare("SELECT * FROM `products`");
       $show_products->execute();
       if($show_products->rowCount() > 0){
-         while($fetch_products = $show_products->fetch(PDO::FETCH_ASSOC)){  
+         while($fetch_products = $show_products->fetch(PDO::FETCH_ASSOC)){
    ?>
    <div class="box">
       <img src="../uploaded_img/<?= $fetch_products['image']; ?>" alt="">
